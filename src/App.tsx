@@ -1,25 +1,47 @@
-import React from 'react';
-import logo from './logo.svg';
-import './App.css';
+import { styled } from "styled-components";
+import { Routes, Route, useNavigate } from "react-router-dom";
+
+import Sidebar from "./components/Sidebar/Sidebar";
+import Main from "./components/Main/Main";
+import Header from "./components/Header";
+
+import { useAppSelector } from "./redux/store";
+import DefaultPage from "./components/DefaultPage";
+import { useEffect } from "react";
+
+const Wrapper = styled.div`
+  display: flex;
+`;
+
+const WrapperRight = styled.div`
+  display: flex;
+  flex-direction: column;
+  flex: 4;
+  overflow: hidden;
+`;
 
 function App() {
+  const { boards } = useAppSelector((store) => store.board);
+
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.tsx</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
+    <Wrapper>
+      <Sidebar />
+      <WrapperRight>
+        <Header />
+        {!Boolean(boards.length) && <DefaultPage />}
+        <Routes>
+          {boards.map((board) => {
+            return (
+              <Route
+                key={board.nameBoard}
+                path={`/${board.nameBoard}`}
+                element={<Main {...board} />}
+              />
+            );
+          })}
+        </Routes>
+      </WrapperRight>
+    </Wrapper>
   );
 }
 
