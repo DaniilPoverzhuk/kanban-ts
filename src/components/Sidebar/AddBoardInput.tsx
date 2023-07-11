@@ -2,7 +2,8 @@ import React, { useRef, useState, useEffect } from "react";
 import styled from "styled-components";
 
 import { useAppDispatch, useAppSelector } from "../../redux/store";
-import { setBoards, setCurrentBoard } from "../../redux/slices/BoardSlice";
+import { setBoards } from "../../redux/slices/BoardSlice";
+
 import isError from "../../utils/isError";
 
 interface Props {
@@ -70,7 +71,6 @@ const AddBoardInput: React.FC<Props> = ({
 }) => {
   const dispatch = useAppDispatch();
   const { boards } = useAppSelector((store) => store.board);
-
   const [errors, setErrors] = useState("");
   const addInputRef = useRef<HTMLInputElement>(null);
 
@@ -90,11 +90,9 @@ const AddBoardInput: React.FC<Props> = ({
 
   const addDashboardHandler = (event: React.KeyboardEvent) => {
     if (event.key === "Enter") {
-      if (isError(errors, addDashboard, setErrors, boards))
-        return console.log("Error");
+      if (isError(errors, addDashboard, setErrors, boards)) return;
 
-      dispatch(setBoards({ actionBoard: addDashboard }));
-      dispatch(setCurrentBoard({ board: addDashboard }));
+      dispatch(setBoards({ nameBoard: addDashboard }));
       setIsAdd(false);
       setAddDashboard("");
     }

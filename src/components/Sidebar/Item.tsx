@@ -1,7 +1,5 @@
-import React, { useEffect, useRef, useState } from "react";
+import React, { useEffect, useRef, useState, useContext } from "react";
 import styled from "styled-components";
-
-import { Link } from "react-router-dom";
 
 import { MdOutlineSpaceDashboard } from "react-icons/md";
 import { IoMdClose } from "react-icons/io";
@@ -10,24 +8,21 @@ import { BsCheck2 } from "react-icons/bs";
 
 import {
   deleteBoard,
-  setCurrentBoard,
   changeNameBoard,
 } from "../../redux/slices/BoardSlice";
 import { useAppDispatch } from "../../redux/store";
+
 import { IBoardPage } from "../../types/types";
+
+import Context from "../Context";
 
 interface Props {
   nameBoard: string;
   idx: number;
-  active: number;
-  isEdit: number;
   boards: IBoardPage[];
-  setActive: (idx: number) => void;
-  setIsEdit: (idx: number) => void;
 }
 
 const Root = styled.li<{ active: string }>`
-  a {
     color: ${({ active, theme }) => (active ? theme.primary : theme.secondary)};
     font-weight: 500;
     text-decoration: none;
@@ -67,7 +62,6 @@ const Root = styled.li<{ active: string }>`
       color: ${({ theme }) => theme.primary};
       opacity: 1;
     }
-  }
 `;
 
 const EditInput = styled.input`
@@ -125,12 +119,9 @@ const SVGCheck = styled(BsCheck2)`
 const Item: React.FC<Props> = ({
   nameBoard,
   idx,
-  isEdit,
-  active,
-  setActive,
-  setIsEdit,
 }) => {
   const dispatch = useAppDispatch();
+  const { active, setActive, isEdit, setIsEdit } = useContext(Context);
   const [isVisible, setIsVisible] = useState(-1);
   const [editValue, setEditValue] = useState("");
   const editInputRef = useRef<HTMLInputElement>(null);
@@ -158,7 +149,6 @@ const Item: React.FC<Props> = ({
         oldName: nameBoard,
       })
     );
-    dispatch(setCurrentBoard({ board: editValue }));
     setEditValue("");
     setIsEdit(-1);
   };
@@ -181,7 +171,6 @@ const Item: React.FC<Props> = ({
       onMouseLeave={() => setIsVisible(-1)}
       onClick={(event) => setActiveHandler(event, idx)}
     >
-      <Link to={nameBoard}>
         <SVGDashboard />
         {idx === isEdit ? (
           <EditInput
@@ -202,7 +191,6 @@ const Item: React.FC<Props> = ({
             )}
           </>
         )}
-      </Link>
     </Root>
   );
 };

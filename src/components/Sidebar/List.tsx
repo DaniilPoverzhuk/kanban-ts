@@ -1,10 +1,10 @@
-import React, { useEffect, useId, useState } from "react";
-import styled from "styled-components";
+import React, { useEffect, useState } from "react";
 
-import { setCurrentBoard } from "../../redux/slices/BoardSlice";
-import { useAppDispatch } from "../../redux/store";
+import styled from "styled-components";
+import { useNavigate } from "react-router-dom";
 
 import { IBoardPage } from "../../types/types";
+
 import Item from "./Item";
 
 interface ListProps {
@@ -22,23 +22,7 @@ const Root = styled.ul`
   margin-top: 20px;
 `;
 
-const List: React.FC<ListProps> = ({ boards, isEdit, setIsEdit }) => {
-  const dispatch = useAppDispatch();
-  const [active, setActive] = useState(0);
-
-  useEffect(() => {
-    setActive(0);
-    dispatch(
-      setCurrentBoard({ board: boards[0].nameBoard.split("-").join(" ") })
-    );
-  }, [boards.length]);
-
-  useEffect(() => {
-    dispatch(
-      setCurrentBoard({ board: boards[active].nameBoard.split("-").join(" ") })
-    );
-  }, [active]);
-
+const List: React.FC<ListProps> = ({ boards }) => {
   return (
     <Root>
       {boards.map((item, idx) => (
@@ -46,11 +30,7 @@ const List: React.FC<ListProps> = ({ boards, isEdit, setIsEdit }) => {
           key={item.nameBoard}
           {...item}
           idx={idx}
-          isEdit={isEdit}
-          active={active}
           boards={boards}
-          setIsEdit={setIsEdit}
-          setActive={setActive}
         />
       ))}
     </Root>

@@ -3,11 +3,14 @@ import styled from "styled-components";
 
 import { AiOutlinePlus } from "react-icons/ai";
 
-import { useAppSelector } from "../../redux/store";
+import { useAppDispatch, useAppSelector } from "../../redux/store";
 
 import AddBoardInput from "./AddBoardInput";
 import List from "./List";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
+
+import Context from '../Context';
+import { setCurrentBoard } from "../../redux/slices/BoardSlice";
 
 const Root = styled.div`
   height: 100vh;
@@ -71,15 +74,33 @@ const SVGPlus = styled(AiOutlinePlus)``;
 
 const Sidebar: React.FC = () => {
   const { boards } = useAppSelector((store) => store.board);
+  const navigate = useNavigate();
+  const dispatch = useAppDispatch();
 
   const [isAdd, setIsAdd] = useState(false);
   const [isEdit, setIsEdit] = useState(-1);
   const [addDashboard, setAddDashboard] = useState("");
+  const [active, setActive] = useState(0);
 
   const showAddInput = (event: React.MouseEvent) => {
     event.stopPropagation();
     setIsAdd(true);
   };
+
+  useEffect(() => {  
+    setActive(0);
+  }, [boards.length]);
+
+  useEffect(() => {
+    if (!boards.length) {
+      navigate('/');
+      dispatch(setCurrentBoard({nameBoard: 'currentBoard'}));
+      return;
+    };
+
+    navigate(`/${boards[active]?.nameBoard.split(" ").join("-")}`)
+    dispatch(setCurrentBoard({nameBoard: boards[active]?.nameBoard.split('-').join(' ')}))
+  }, [active, boards])
 
   useEffect(() => {
     document.addEventListener("click", () => {
@@ -98,12 +119,13 @@ const Sidebar: React.FC = () => {
   }, []);
 
   return (
-    <Root>
+    <Context.Provider value={{ isEdit, setIsEdit, active, setActive }}>
+          <Root>
       <Logo>
         Kanban <Span>Dashboard</Span>
       </Logo>
       <Title>
-        All Boards ({Boolean(boards[0]?.nameBoard) ? boards.length : "0"})
+        All Boards ({ boards.length })
       </Title>
       {isAdd && (
         <AddBoardInput
@@ -113,7 +135,7 @@ const Sidebar: React.FC = () => {
           setAddDashboard={setAddDashboard}
         />
       )}
-      {Boolean(boards[0]?.nameBoard) ? (
+      {Boolean(boards.length) ? (
         <List boards={boards} isEdit={isEdit} setIsEdit={setIsEdit} />
       ) : (
         !isAdd && <Empty>No boards :(</Empty>
@@ -123,6 +145,7 @@ const Sidebar: React.FC = () => {
         Create New Board
       </Button>
     </Root>
+    </Context.Provider>
   );
 };
 

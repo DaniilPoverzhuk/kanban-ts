@@ -25,22 +25,19 @@ const board: IBoardPage = {
 };
 
 const initialState: IInitialState = {
-  boards: [{ ...board, nameBoard: "Default-Page" }],
-  currentBoard: "Default Page",
+  boards: [],
+  currentBoard: '',
 };
 
 const BoardSlice = createSlice({
   name: "BoardSlice",
   initialState,
   reducers: {
-    setBoards: (state, action: PayloadAction<{ actionBoard: string }>) => {
+    setBoards: (state, action: PayloadAction<{ nameBoard: string }>) => {
       state.boards.unshift({
         ...board,
-        nameBoard: action.payload.actionBoard.split(" ").join("-"),
+        nameBoard: action.payload.nameBoard.split(" ").join("-"),
       });
-    },
-    setCurrentBoard: (state, action: PayloadAction<{ board: string }>) => {
-      state.currentBoard = action.payload.board;
     },
     setTaskTitle: (
       state,
@@ -66,6 +63,9 @@ const BoardSlice = createSlice({
         });
       }
     },
+    setCurrentBoard: (state, action: PayloadAction<{ nameBoard: string }>) => {
+      state.currentBoard = action.payload.nameBoard;
+    },
     changeNameBoard: (
       state,
       action: PayloadAction<{ newName: string; oldName: string }>
@@ -86,12 +86,12 @@ const BoardSlice = createSlice({
       state,
       action: PayloadAction<{
         title: string;
-        currentBoard: string;
+        nameBoard: string;
         nameColumn: TypeStatus;
       }>
     ) => {
       const boardCondition = (board: IBoardPage) =>
-        board.nameBoard.split("-").join(" ") === action.payload.currentBoard;
+        board.nameBoard.split("-").join(" ") === action.payload.nameBoard;
       const columnCondition = (column: IColumn) =>
         column.nameColumn === action.payload.nameColumn;
 
@@ -120,8 +120,8 @@ export default BoardSlice.reducer;
 export const {
   setBoards,
   deleteBoard,
-  setCurrentBoard,
   changeNameBoard,
   setTaskTitle,
+  setCurrentBoard,
   deleteTask,
 } = BoardSlice.actions;

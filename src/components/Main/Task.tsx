@@ -1,14 +1,16 @@
-import React, { useEffect } from "react";
+import React, { useContext } from "react";
 import styled from "styled-components";
 
+import Context from "../Context";
+
 import { IoMdClose } from "react-icons/io";
-import { useAppDispatch, useAppSelector } from "../../redux/store";
+import { useAppDispatch } from "../../redux/store";
 import { ITask, TypeStatus } from "../../types/types";
 import { deleteTask } from "../../redux/slices/BoardSlice";
 
 interface Props extends ITask {
   nameColumn: TypeStatus;
-  droppedColumn: TypeStatus | undefined;
+  nameBoard: string;
 }
 
 const Root = styled.li`
@@ -55,24 +57,17 @@ const AmountDoneSubTasks = styled.span``;
 const Task: React.FC<Props> = ({
   title,
   nameColumn,
-  status,
-  droppedColumn,
+  nameBoard,
 }) => {
   const dispatch = useAppDispatch();
-  const { currentBoard } = useAppSelector((store) => store.board);
+  const { onDropTask, onDragOverTask, onDragStartHandler } = useContext(Context);
 
   const deleteTaskHandler = () => {
-    dispatch(deleteTask({ currentBoard, title, nameColumn }));
+    dispatch(deleteTask({ nameBoard: nameBoard.split('-').join(' '), title, nameColumn }));
   };
 
-  console.log(droppedColumn);
-
-  useEffect(() => {
-    console.log(title, droppedColumn, status);
-  }, [droppedColumn]);
-
   return (
-    <Root draggable={true}>
+    <Root draggable={true} onDrop={(event) => onDropTask(event, nameColumn)} onDragOver={onDragOverTask} onDragStart={() => onDragStartHandler(title, nameColumn)}>
       <Close onClick={deleteTaskHandler} />
       <Title>{title}</Title>
       <AmountDoneSubTasks></AmountDoneSubTasks>

@@ -8,6 +8,8 @@ import { BsCheck2 } from "react-icons/bs";
 import { useAppDispatch, useAppSelector } from "../../redux/store";
 import { setTaskTitle } from "../../redux/slices/BoardSlice";
 import isInclude from "../../utils/isInclude";
+import { useParams } from "react-router-dom";
+import getBoardInfo from "../../utils/getBoardInfo";
 
 interface Props {
   visible: boolean;
@@ -78,31 +80,29 @@ const SetTitleInput: React.FC<Props> = ({
   setVisible,
   nameColumn,
 }) => {
-  const dispatch = useAppDispatch();
-  const { currentBoard, boards } = useAppSelector((store) => store.board);
+  const { id } = useParams();
+  const { nameBoard, boards } = getBoardInfo(id!);
   const [title, setTitle] = useState("");
   const inputRef = useRef<HTMLInputElement>(null);
+  const dispatch = useAppDispatch();
 
   const clearInput = () => {
     setTitle("");
-    if (inputRef.current) {
-      inputRef.current.focus();
-    }
+    if (inputRef.current) inputRef.current.focus();
   };
 
   const addTaskHandler = (event: React.MouseEvent<SVGElement>) => {
-    if (isInclude(boards, title, currentBoard))
-      return toast.error("Задача с таким названим уже есть!");
     event.stopPropagation();
+
+    if (isInclude(boards, title, nameBoard!)) return toast.error("Задача с таким названим уже есть!");
+    if (nameBoard) dispatch(setTaskTitle({ nameBoard, nameColumn, title }));
+    
     setVisible(false);
     clearInput();
-    dispatch(setTaskTitle({ nameBoard: currentBoard, nameColumn, title }));
   };
 
   useEffect(() => {
-    if (inputRef.current) {
-      inputRef.current.focus();
-    }
+    if (inputRef.current) inputRef.current.focus();
   }, [visible]);
 
   return (

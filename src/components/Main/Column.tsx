@@ -5,6 +5,14 @@ import { IColumn, ITask, TypeStatus } from "../../types/types";
 
 import SetTitleInput from "./SetTitleInput";
 import Task from "./Task";
+import { useAppDispatch } from "../../redux/store";
+import { deleteTask, setTaskTitle } from "../../redux/slices/BoardSlice";
+
+interface Props extends IColumn {
+  draggableTitle: string,
+  draggableColumn: TypeStatus,
+  nameBoard: string,
+}
 
 const Root = styled.div`
   min-width: 350px;
@@ -71,25 +79,24 @@ const List = styled.ul`
   list-style: none;
 `;
 
-const Column: React.FC<IColumn> = ({ nameColumn, tasks }) => {
+const Column: React.FC<Props> = ({ nameColumn, tasks, draggableTitle, draggableColumn, nameBoard }) => {
+  const dispatch = useAppDispatch();
   const [visible, setVisible] = useState(false);
-  const [droppedColumn, setDroppedColumn] = useState<TypeStatus>();
 
   const showInput = (event: React.MouseEvent<HTMLDivElement>) => {
     event.stopPropagation();
     setVisible(true);
   };
 
-  const onDragOverHandler = (event: React.DragEvent<HTMLDivElement>) => {
+  const onDragOverColumn = (event: React.DragEvent<HTMLDivElement>) => {
     event.preventDefault();
-  };
+  }
 
-  const onDropHandler = (event: React.DragEvent<HTMLDivElement>) => {
+  const onDropColumn = (event: React.DragEvent<HTMLDivElement>) => {
     event.preventDefault();
-    setDroppedColumn(nameColumn);
-  };
-
-  console.log(tasks);
+    dispatch(deleteTask({ title: draggableTitle, nameBoard: nameBoard.split("-").join(" "), nameColumn: draggableColumn}));
+    dispatch(setTaskTitle({ nameBoard, title: draggableTitle, nameColumn}));
+  }
 
   useEffect(() => {
     document.addEventListener("click", () => {
@@ -104,7 +111,7 @@ const Column: React.FC<IColumn> = ({ nameColumn, tasks }) => {
   }, []);
 
   return (
-    <Root onDragOver={onDragOverHandler} onDrop={onDropHandler}>
+    <Root onDragOver={onDragOverColumn} onDrop={onDropColumn}>
       <NameColumn>
         <Circle nameColumn={nameColumn} /> {nameColumn} ({tasks.length})
       </NameColumn>
@@ -126,7 +133,7 @@ const Column: React.FC<IColumn> = ({ nameColumn, tasks }) => {
               key={task.title}
               {...task}
               nameColumn={nameColumn}
-              droppedColumn={droppedColumn}
+              nameBoard={nameBoard}
             />
           ))}
       </List>

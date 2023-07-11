@@ -1,10 +1,9 @@
 import React, { useEffect } from "react";
 import { styled } from "styled-components";
 
+import getBoardInfo from "../utils/getBoardInfo";
+import { useParams } from "react-router-dom";
 import { useAppSelector } from "../redux/store";
-
-import { AiOutlinePlus } from "react-icons/ai";
-import { useNavigate, useSearchParams } from "react-router-dom";
 
 const Root = styled.header`
   background-color: ${({ theme }) => theme.background};
@@ -26,62 +25,12 @@ const Title = styled.h1`
   }
 `;
 
-const Right = styled.div`
-  display: flex;
-  align-items: center;
-  gap: 30px;
-`;
-
-const Button = styled.button`
-  padding: 15px;
-  display: flex;
-  align-items: center;
-  gap: 7px;
-
-  border-radius: 15px;
-  background: #645fc6;
-  border: none;
-
-  color: ${({ theme }) => theme.primary};
-  font-weight: 500;
-
-  transition: 0.4s;
-  cursor: pointer;
-
-  &:hover {
-    background: transparent;
-    outline: 1px solid #645fc6;
-    color: #645fc6;
-  }
-`;
-
-const SVGPlus = styled(AiOutlinePlus)`
-  &:hover {
-    path {
-      fill: #645fc6;
-    }
-  }
-`;
-
 const Header: React.FC = () => {
-  const { currentBoard, boards } = useAppSelector((store) => store.board);
-  const navigate = useNavigate();
-
-  useEffect(() => {
-    navigate(`/${currentBoard.split(" ").join("-")}`);
-  }, [currentBoard]);
-
+  const { currentBoard } = useAppSelector(state => state.board);
+  
   return (
     <Root>
-      <Title>{boards.length ? currentBoard : "Current Board"}</Title>
-      <Right>
-        {Boolean(boards.length) && (
-          <Button>
-            <SVGPlus />
-            Add New Task
-          </Button>
-        )}
-      </Right>
+      <Title>{currentBoard ?? 'Current Board'}</Title>
     </Root>
   );
 };

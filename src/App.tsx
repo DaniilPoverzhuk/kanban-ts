@@ -1,13 +1,11 @@
 import { styled } from "styled-components";
-import { Routes, Route, useNavigate } from "react-router-dom";
+import { Routes, Route } from "react-router-dom";
 
 import Sidebar from "./components/Sidebar/Sidebar";
 import Main from "./components/Main/Main";
 import Header from "./components/Header";
-
-import { useAppSelector } from "./redux/store";
 import DefaultPage from "./components/DefaultPage";
-import { useEffect } from "react";
+import NotFound from "./components/NotFound";
 
 const Wrapper = styled.div`
   display: flex;
@@ -21,26 +19,17 @@ const WrapperRight = styled.div`
 `;
 
 function App() {
-  const { boards } = useAppSelector((store) => store.board);
-
   return (
     <Wrapper>
       <Sidebar />
       <WrapperRight>
         <Header />
-        {!Boolean(boards.length) && <DefaultPage />}
         <Routes>
-          {boards.map((board) => {
-            return (
-              <Route
-                key={board.nameBoard}
-                path={`/${board.nameBoard}`}
-                element={<Main {...board} />}
-              />
-            );
-          })}
+            <Route path='/' element={<DefaultPage />}/>
+            <Route path="/:id" element={<Main />}/>
+            <Route path="*" element={<NotFound />}/>  
         </Routes>
-      </WrapperRight>
+      </WrapperRight> 
     </Wrapper>
   );
 }

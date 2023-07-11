@@ -16,7 +16,7 @@ const Root = styled.main`
 `;
 
 const DefaultPage: React.FC = () => {
-  return <Root>Please create a new board 😕</Root>;
+  return <Root>Please create a board 😕</Root>;
 };
 
 export default DefaultPage;

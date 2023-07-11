@@ -18,4 +18,4 @@ export interface ITaskItem {
   value: string;
 }
 
-export type TypeStatus = "todo" | "doing" | "done";
+export type TypeStatus = "todo" | "doing" | "done" | '';
